@@ -56,7 +56,6 @@ function showLoading(voice) {
   stopBtn.disabled  = true;
   replayBtn.disabled = true;
   audio.pause();
-  audio.src = '';
   resetProgress();
 }
 
