@@ -1,7 +1,11 @@
 'use strict';
 
-// In-memory tab ID of the open player window.
-let playerTabId = null;
+// Player tab ID persisted in storage so it survives service worker restarts.
+// If kept only in memory, SW termination resets it to null and a second player
+// window gets opened while the old one is still alive — causing an echo.
+const getPlayerTabId  = async () => (await chrome.storage.local.get({ playerTabId: null })).playerTabId;
+const setPlayerTabId  = (id) => chrome.storage.local.set({ playerTabId: id });
+const clearPlayerTabId = ()  => chrome.storage.local.remove('playerTabId');
 
 // ── Setup ──────────────────────────────────────────────────────────────
 
@@ -152,13 +156,19 @@ async function triggerSynthesis(text) {
 // ── Player window ──────────────────────────────────────────────────────
 
 async function openOrFocusPlayer() {
+  const playerTabId = await getPlayerTabId();
+
   if (playerTabId !== null) {
     try {
       const tab = await chrome.tabs.get(playerTabId);
+      // sendMessage may fail if the player page hasn't finished loading yet;
+      // pendingSynthesis in storage acts as the fallback in that case.
+      chrome.tabs.sendMessage(playerTabId, { type: 'NEW_SYNTHESIS' }).catch(() => {});
       await chrome.windows.update(tab.windowId, { focused: true });
       return;
     } catch {
-      playerTabId = null;
+      // Tab no longer exists — clear stale ID and fall through to open a new window.
+      await clearPlayerTabId();
     }
   }
 
@@ -170,11 +180,12 @@ async function openOrFocusPlayer() {
     focused: true,
   });
 
-  playerTabId = win.tabs?.[0]?.id ?? null;
+  await setPlayerTabId(win.tabs?.[0]?.id ?? null);
 }
 
-chrome.tabs.onRemoved.addListener((tabId) => {
-  if (tabId === playerTabId) playerTabId = null;
+chrome.tabs.onRemoved.addListener(async (tabId) => {
+  const playerTabId = await getPlayerTabId();
+  if (tabId === playerTabId) await clearPlayerTabId();
 });
 
 // ── Utilities ──────────────────────────────────────────────────────────
