@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kokoro TTS — Player</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    html, body {
+      width: 380px;
+      height: 280px;
+      overflow: hidden;
+      background: #1a1730;
+      color: #e2e8f0;
+    }
+
+    .player {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 16px 18px 14px;
+      position: relative;
+    }
+
+    /* ── Close button ── */
+    #close-btn {
+      position: absolute;
+      top: 12px; right: 12px;
+      width: 22px; height: 22px;
+      background: rgba(255,255,255,0.08);
+      border: none;
+      border-radius: 50%;
+      color: #94a3b8;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    #close-btn:hover { background: rgba(255,255,255,0.15); color: #e2e8f0; }
+
+    /* ── Meta ── */
+    .meta { margin-bottom: 12px; padding-right: 28px; }
+
+    #status-text {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #818cf8;
+      margin-bottom: 3px;
+    }
+    #player-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f1f5f9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Error banner ── */
+    #error-banner {
+      display: none;
+      align-items: flex-start;
+      gap: 8px;
+      background: rgba(220,38,38,0.12);
+      border: 1px solid rgba(220,38,38,0.3);
+      border-radius: var(--radius);
+      padding: 8px 10px;
+      margin-bottom: 10px;
+    }
+    #error-banner .icon { font-size: 13px; flex-shrink: 0; }
+    #error-banner .msg  { font-size: 11px; color: #fca5a5; line-height: 1.5; }
+
+    /* ── Controls ── */
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .ctrl-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+      border: none;
+      color: #94a3b8;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s, transform 0.1s;
+    }
+    .ctrl-btn:hover { background: rgba(255,255,255,0.13); color: #e2e8f0; }
+    .ctrl-btn:active { transform: scale(0.94); }
+    .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+    #play-btn {
+      width: 50px; height: 50px;
+      font-size: 20px;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(79,70,229,0.4);
+    }
+    #play-btn:hover { box-shadow: 0 4px 20px rgba(79,70,229,0.6); }
+
+    /* ── Progress ── */
+    .progress-area { margin-bottom: 12px; }
+
+    #progress-bar {
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      position: relative;
+      cursor: pointer;
+      margin-bottom: 5px;
+    }
+    #progress-bar:hover #progress-thumb { opacity: 1; }
+
+    #progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4f46e5, #818cf8);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.1s linear;
+      pointer-events: none;
+    }
+    #progress-thumb {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      transform: translate(-50%, -50%);
+      width: 11px; height: 11px;
+      background: #818cf8;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(129,140,248,0.25);
+      opacity: 0;
+      transition: opacity 0.15s, left 0.1s linear;
+      pointer-events: none;
+    }
+
+    .progress-times {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #475569;
+    }
+
+    /* ── Volume ── */
+    .volume-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: auto;
+    }
+    .volume-icon { font-size: 13px; color: #64748b; flex-shrink: 0; }
+    #volume-slider {
+      flex: 1;
+      height: 4px;
+      accent-color: #818cf8;
+      cursor: pointer;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* ── Loading shimmer on progress bar ── */
+    @keyframes shimmer {
+      0%   { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+    body[data-state="loading"] #progress-fill {
+      width: 100% !important;
+      background: linear-gradient(90deg, #2d2b5a, #4f46e5, #818cf8, #4f46e5, #2d2b5a);
+      background-size: 200% auto;
+      animation: shimmer 1.8s linear infinite;
+      transition: none;
+    }
+    body[data-state="loading"] #progress-thumb { display: none; }
+    body[data-state="loading"] #play-btn { opacity: 0.45; cursor: not-allowed; }
+    body[data-state="loading"] #stop-btn { opacity: 0.35; cursor: not-allowed; }
+    body[data-state="loading"] #replay-btn { opacity: 0.35; cursor: not-allowed; }
+
+    body[data-state="error"] #status-text { color: #f87171; }
+    body[data-state="playing"] #status-text { color: #818cf8; }
+    body[data-state="paused"]  #status-text { color: #94a3b8; }
+  </style>
+</head>
+<body data-state="idle">
+<div class="player">
+
+  <button id="close-btn" title="Close">✕</button>
+
+  <div class="meta">
+    <div id="status-text">◦ Ready</div>
+    <div id="player-title">Kokoro TTS</div>
+  </div>
+
+  <div id="error-banner">
+    <span class="icon">⚠️</span>
+    <span class="msg" id="error-message"></span>
+  </div>
+
+  <div class="controls">
+    <button id="stop-btn"   class="ctrl-btn" title="Stop" aria-label="Stop">■</button>
+    <button id="play-btn"   class="ctrl-btn" title="Play" aria-label="Play">▶</button>
+    <button id="replay-btn" class="ctrl-btn" title="Replay from start" aria-label="Replay">↺</button>
+  </div>
+
+  <div class="progress-area">
+    <div id="progress-bar" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div id="progress-fill"></div>
+      <div id="progress-thumb"></div>
+    </div>
+    <div class="progress-times">
+      <span id="time-elapsed">--:--</span>
+      <span id="time-duration">--:--</span>
+    </div>
+  </div>
+
+  <div class="volume-row">
+    <span class="volume-icon" id="volume-icon">🔊</span>
+    <input id="volume-slider" type="range" min="0" max="100" value="80" aria-label="Volume">
+  </div>
+
+</div>
+<script src="player.js"></script>
+</body>
+</html>

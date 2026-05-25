@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kokoro TTS Plugin — Mockups</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f0f13;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    /* ── Layout ── */
+    .shell {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      grid-template-rows: 56px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      grid-column: 1 / -1;
+      background: #1a1a24;
+      border-bottom: 1px solid #2d2d3f;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 12px;
+    }
+    .topbar-logo {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .topbar-title { font-size: 15px; font-weight: 600; color: #f1f5f9; }
+    .topbar-subtitle { font-size: 12px; color: #64748b; margin-top: 1px; }
+    .topbar-badge {
+      margin-left: auto;
+      background: #1e2235;
+      border: 1px solid #2d2d3f;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: #13131c;
+      border-right: 1px solid #2d2d3f;
+      padding: 20px 12px;
+    }
+    .sidebar-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #475569;
+      padding: 0 8px;
+      margin-bottom: 8px;
+      margin-top: 20px;
+    }
+    .sidebar-label:first-child { margin-top: 0; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover { background: #1e1e2d; color: #cbd5e1; }
+    .nav-item.active {
+      background: #1e1e40;
+      color: #818cf8;
+      font-weight: 500;
+    }
+    .nav-icon { font-size: 16px; flex-shrink: 0; }
+    .nav-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      margin-left: auto;
+    }
+
+    /* ── Main content ── */
+    .main {
+      padding: 40px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+    .screen-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 4px;
+    }
+    .screen-title { font-size: 22px; font-weight: 700; color: #f1f5f9; }
+    .screen-desc { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+    /* ── Browser frame ── */
+    .browser-frame {
+      background: #1e2030;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .browser-chrome {
+      background: #252535;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #1a1a28;
+    }
+    .chrome-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .chrome-dot.red { background: #ff5f57; }
+    .chrome-dot.yellow { background: #ffbd2e; }
+    .chrome-dot.green { background: #28ca41; }
+    .chrome-omnibox {
+      flex: 1;
+      background: #1a1a2a;
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: #94a3b8;
+      margin: 0 12px;
+    }
+    .chrome-ext-icon {
+      width: 22px; height: 22px;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+    }
+    .browser-content {
+      padding: 28px;
+      display: flex;
+      gap: 28px;
+      align-items: flex-start;
+    }
+
+    /* ── Extension Popup ── */
+    .ext-popup {
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.12);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .popup-header {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .popup-header-icon {
+      width: 28px; height: 28px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .popup-header-text { flex: 1; }
+    .popup-header-title { font-size: 14px; font-weight: 700; color: #fff; }
+    .popup-header-sub { font-size: 11px; color: rgba(255,255,255,0.7); }
+    .popup-body { padding: 16px; width: 320px; }
+
+    /* ── Form Elements ── */
+    .section-heading {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 10px;
+      margin-top: 18px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .section-heading:first-child { margin-top: 0; }
+    .field { margin-bottom: 12px; }
+    .field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 5px;
+    }
+    .field-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 7px;
+      font-size: 12px;
+      color: #1e293b;
+      background: #fff;
+      outline: none;
+    }
+    .input:focus { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129,140,248,0.15); }
+    .input.error { border-color: #f87171; }
+    .input.success { border-color: #34d399; }
+    .select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 7px;
+      font-size: 12px;
+      color: #1e293b;
+      background: #fff;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+    }
+    .btn {
+      padding: 7px 12px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .btn-primary {
+      background: #4f46e5;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #4338ca; }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #e2e8f0;
+      color: #64748b;
+    }
+    .btn-outline:hover { border-color: #cbd5e1; background: #f8fafc; }
+    .btn-icon {
+      width: 30px; height: 30px;
+      padding: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .btn-sm { padding: 5px 10px; font-size: 11px; }
+    .btn-full { width: 100%; justify-content: center; display: flex; align-items: center; gap: 6px; }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .status-pill.connected { background: #d1fae5; color: #065f46; }
+    .status-pill.disconnected { background: #fee2e2; color: #991b1b; }
+    .status-pill.testing { background: #fef3c7; color: #92400e; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    .advanced-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      padding: 8px 0;
+      font-size: 12px;
+      color: #64748b;
+      border-top: 1px solid #f1f5f9;
+      margin-top: 4px;
+    }
+    .advanced-toggle:hover { color: #475569; }
+    .advanced-content { padding-top: 10px; }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .toggle-label { font-size: 12px; color: #374151; }
+    .toggle {
+      position: relative;
+      width: 36px; height: 20px;
+      background: #818cf8;
+      border-radius: 10px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      background: white;
+      border-radius: 50%;
+      top: 2px; right: 2px;
+      transition: right 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle.off { background: #e2e8f0; }
+    .toggle.off::after { right: 18px; }
+
+    .range-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .range-label { font-size: 12px; color: #374151; flex: 1; }
+    .range-value { font-size: 11px; color: #64748b; width: 28px; text-align: right; }
+    input[type=range] {
+      width: 80px;
+      height: 4px;
+      accent-color: #818cf8;
+    }
+
+    /* ── Context Menu mockup ── */
+    .webpage-preview {
+      flex: 1;
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 20px;
+      position: relative;
+      min-height: 280px;
+      border: 1px solid #e2e8f0;
+    }
+    .webpage-text {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #374151;
+    }
+    .webpage-highlight {
+      background: #bfdbfe;
+      border-radius: 2px;
+      position: relative;
+    }
+    .context-menu {
+      position: absolute;
+      top: 72px; left: 50%;
+      transform: translateX(-20%);
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.08);
+      overflow: hidden;
+      min-width: 200px;
+      z-index: 10;
+    }
+    .ctx-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      font-size: 13px;
+      color: #1e293b;
+      cursor: pointer;
+    }
+    .ctx-item:hover { background: #f1f5f9; }
+    .ctx-item.highlighted { background: #eff6ff; color: #1d4ed8; font-weight: 500; }
+    .ctx-item.highlighted .ctx-icon { filter: none; }
+    .ctx-separator { height: 1px; background: #f1f5f9; margin: 2px 0; }
+    .ctx-icon { font-size: 14px; }
+
+    /* ── Audio Player ── */
+    .player-popup {
+      background: #1e1b3a;
+      border-radius: 14px;
+      padding: 18px;
+      width: 340px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .player-close {
+      position: absolute;
+      top: 12px; right: 12px;
+      width: 24px; height: 24px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      color: #94a3b8;
+      cursor: pointer;
+    }
+    .player-status {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #818cf8;
+      margin-bottom: 4px;
+    }
+    .player-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 2px;
+    }
+    .player-voice {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 18px;
+    }
+    .player-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .ctrl-btn {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      color: #94a3b8;
+      border: none;
+      transition: all 0.15s;
+    }
+    .ctrl-btn:hover { background: rgba(255,255,255,0.14); color: #e2e8f0; }
+    .ctrl-btn.play {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff;
+      font-size: 20px;
+      box-shadow: 0 4px 16px rgba(79,70,229,0.45);
+    }
+    .ctrl-btn.play:hover { box-shadow: 0 4px 24px rgba(79,70,229,0.6); transform: scale(1.04); }
+
+    .progress-bar {
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      margin-bottom: 6px;
+      position: relative;
+      cursor: pointer;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4f46e5, #818cf8);
+      border-radius: 2px;
+      width: 38%;
+    }
+    .progress-thumb {
+      position: absolute;
+      top: 50%;
+      left: 38%;
+      transform: translate(-50%, -50%);
+      width: 12px; height: 12px;
+      background: #818cf8;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(129,140,248,0.3);
+    }
+    .progress-times {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #475569;
+      margin-bottom: 14px;
+    }
+    .volume-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .volume-icon { font-size: 14px; color: #64748b; }
+    input[type=range].dark {
+      width: 100%;
+      height: 4px;
+      accent-color: #818cf8;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* ── Error State ── */
+    .error-banner {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .error-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .error-text { font-size: 12px; color: #991b1b; }
+
+    /* ── State labels ── */
+    .state-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      margin-left: 10px;
+    }
+    .state-tag.default { background: #1e2035; color: #818cf8; }
+    .state-tag.error-state { background: #2d1515; color: #f87171; }
+    .state-tag.success-state { background: #0d2d1e; color: #34d399; }
+
+    /* ── Annotations ── */
+    .annotation {
+      background: #1e2035;
+      border-left: 3px solid #4f46e5;
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 16px;
+    }
+    .annotation strong { color: #a5b4fc; }
+
+    /* ── Screen sections ── */
+    .screen-section { display: none; }
+    .screen-section.active { display: block; }
+
+    .two-col {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #2d2d3f; border-radius: 3px; }
+
+    /* loading dots animation */
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+    .loading-dot { display: inline-block; animation: pulse 1.2s infinite; }
+    .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-logo">🔊</div>
+    <div>
+      <div class="topbar-title">Kokoro TTS Plugin</div>
+      <div class="topbar-subtitle">Chrome Extension · Design Mockups</div>
+    </div>
+    <div class="topbar-badge">v0.1 · Mockup Only</div>
+  </header>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-label">Screens</div>
+    <button class="nav-item active" onclick="show('config')">
+      <span class="nav-icon">⚙️</span> Configuration
+      <span class="nav-dot" style="background:#818cf8"></span>
+    </button>
+    <button class="nav-item" onclick="show('player')">
+      <span class="nav-icon">▶️</span> Audio Player
+    </button>
+    <button class="nav-item" onclick="show('contextmenu')">
+      <span class="nav-icon">🖱️</span> Context Menu
+    </button>
+    <div class="sidebar-label">States</div>
+    <button class="nav-item" onclick="show('error')">
+      <span class="nav-icon">⚠️</span> Error State
+    </button>
+    <button class="nav-item" onclick="show('loading')">
+      <span class="nav-icon">⏳</span> Loading State
+    </button>
+    <div class="sidebar-label">Flow</div>
+    <button class="nav-item" onclick="show('setup')">
+      <span class="nav-icon">🚀</span> Setup Flow
+    </button>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ──────────────────────────────────── CONFIG ── -->
+    <div id="screen-config" class="screen-section active">
+      <div class="screen-header">
+        <div>
+          <div class="screen-title">Configuration Popup <span class="state-tag default">Default State</span></div>
+          <div class="screen-desc">Accessible via the extension icon in the Chrome toolbar · 320px wide</div>
+        </div>
+      </div>
+
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <div class="chrome-dot red"></div>
+          <div class="chrome-dot yellow"></div>
+          <div class="chrome-dot green"></div>
+          <div class="chrome-omnibox">https://example.com/article</div>
+          <div class="chrome-ext-icon">🔊</div>
+        </div>
+        <div class="browser-content">
+          <!-- Extension popup -->
+          <div class="ext-popup">
+            <div class="popup-header">
+              <div class="popup-header-icon">🔊</div>
+              <div class="popup-header-text">
+                <div class="popup-header-title">Kokoro TTS</div>
+                <div class="popup-header-sub">Text-to-Speech</div>
+              </div>
+              <span class="status-pill connected"><span class="status-dot"></span> Connected</span>
+            </div>
+            <div class="popup-body">
+              <div class="section-heading">API Configuration</div>
+
+              <div class="field">
+                <label class="field-label">API Endpoint URL</label>
+                <div class="field-row">
+                  <input class="input success" type="text" value="http://192.168.1.100:8000" readonly>
+                  <button class="btn btn-outline btn-icon btn-sm">↺</button>
+                </div>
+              </div>
+
+              <button class="btn btn-outline btn-full btn-sm" style="margin-bottom:10px">
+                🔌 Test Connection
+              </button>
+              <div style="display:flex;justify-content:center;margin-bottom:4px">
+                <span class="status-pill connected"><span class="status-dot"></span> API reachable · 12ms</span>
+              </div>
+
+              <div class="section-heading">Voice Selection</div>
+
+              <div class="field">
+                <label class="field-label">Default Voice</label>
+                <div class="field-row">
+                  <select class="select">
+                    <option selected>af_heart (Afrikaans · Female)</option>
+                    <option>af_bella (Afrikaans · Female)</option>
+                    <option>am_adam (American · Male)</option>
+                    <option>bf_emma (British · Female)</option>
+                    <option>bm_lewis (British · Male)</option>
+                  </select>
+                  <button class="btn btn-outline btn-icon btn-sm">↺</button>
+                </div>
+              </div>
+
+              <div class="advanced-toggle" onclick="toggleAdvanced()">
+                <span>Advanced Settings</span>
+                <span id="adv-chevron">▾</span>
+              </div>
+              <div class="advanced-content" id="adv-content">
+                <div class="toggle-row">
+                  <span class="toggle-label">Auto-play after synthesis</span>
+                  <div class="toggle"></div>
+                </div>
+                <div class="toggle-row">
+                  <span class="toggle-label">Floating player (vs popup)</span>
+                  <div class="toggle off"></div>
+                </div>
+                <div class="range-row">
+                  <span class="range-label">Default Volume</span>
+                  <input type="range" min="0" max="100" value="80">
+                  <span class="range-value">80%</span>
+                </div>
+                <div class="range-row">
+                  <span class="range-label">Speed</span>
+                  <input type="range" min="50" max="200" value="100">
+                  <span class="range-value">1.0×</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation">
+        <strong>Behaviour:</strong> Settings save automatically on change via <code>chrome.storage.sync</code>. Voice list is fetched once on popup open, with a manual refresh button. The status pill updates live after "Test Connection".
+      </div>
+    </div>
+
+    <!-- ──────────────────────────────────── PLAYER ── -->
+    <div id="screen-player" class="screen-section">
+      <div class="screen-header">
+        <div>
+          <div class="screen-title">Audio Player <span class="state-tag default">Playing State</span></div>
+          <div class="screen-desc">Floating popup window · 340px wide · appears after synthesis completes</div>
+        </div>
+      </div>
+
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <div class="chrome-dot red"></div>
+          <div class="chrome-dot yellow"></div>
+          <div class="chrome-dot green"></div>
+          <div class="chrome-omnibox">https://news.example.com/article</div>
+          <div class="chrome-ext-icon">🔊</div>
+        </div>
+        <div class="browser-content" style="justify-content: center; padding: 48px 28px;">
+          <div class="player-popup">
+            <div class="player-close">✕</div>
+            <div class="player-status">▶ Now Playing</div>
+            <div class="player-title">af_heart — Afrikaans Female</div>
+            <div class="player-voice">Selected text · 342 characters</div>
+
+            <div class="player-controls">
+              <button class="ctrl-btn" title="Stop">■</button>
+              <button class="ctrl-btn play" title="Pause">⏸</button>
+              <button class="ctrl-btn" title="Replay">↺</button>
+            </div>
+
+            <div class="progress-bar">
+              <div class="progress-fill"></div>
+              <div class="progress-thumb"></div>
+            </div>
+            <div class="progress-times">
+              <span>0:14</span>
+              <span>0:38</span>
+            </div>
+
+            <div class="volume-row">
+              <span class="volume-icon">🔊</span>
+              <input type="range" class="dark" min="0" max="100" value="80" style="accent-color:#818cf8">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation">
+        <strong>Behaviour:</strong> Player auto-plays if "Auto-play" is enabled. Progress bar is interactive — click to seek. Close button dismisses the window but doesn't stop playback (separate Stop button for that). Player floats above page content.
+      </div>
+    </div>
+
+    <!-- ──────────────────────────────────── CONTEXT MENU ── -->
+    <div id="screen-contextmenu" class="screen-section">
+      <div class="screen-header">
+        <div>
+          <div class="screen-title">Context Menu Integration</div>
+          <div class="screen-desc">Appears on right-click when text is selected · only shown when API is configured</div>
+        </div>
+      </div>
+
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <div class="chrome-dot red"></div>
+          <div class="chrome-dot yellow"></div>
+          <div class="chrome-dot green"></div>
+          <div class="chrome-omnibox">https://news.example.com/article</div>
+          <div class="chrome-ext-icon">🔊</div>
+        </div>
+        <div class="browser-content" style="min-height: 340px;">
+          <div class="webpage-preview" style="position:relative; min-height: 320px;">
+            <div class="webpage-text">
+              <p style="font-size:18px; font-weight:700; color:#111827; margin-bottom:12px">Scientists discover new approach to quantum computing</p>
+              <p style="margin-bottom:10px">Researchers at MIT have announced a breakthrough in quantum error correction that could dramatically reduce the overhead required for stable qubit operation.</p>
+              <p>"<span class="webpage-highlight">The new method reduces error rates by an order of magnitude, bringing practical quantum computing significantly closer to reality</span>," said lead researcher Dr. Chen in a press statement Thursday.</p>
+            </div>
+            <div class="context-menu">
+              <div class="ctx-item">↩ Back</div>
+              <div class="ctx-item">🔖 Save page as…</div>
+              <div class="ctx-item">🖨️ Print…</div>
+              <div class="ctx-separator"></div>
+              <div class="ctx-item">🔍 Search Google for "The new…"</div>
+              <div class="ctx-separator"></div>
+              <div class="ctx-item highlighted">
+                <span class="ctx-icon">🔊</span> Read with Kokoro TTS
+              </div>
+              <div class="ctx-separator"></div>
+              <div class="ctx-item">🔎 Inspect</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation">
+        <strong>Behaviour:</strong> Menu item only appears when text is selected AND the API URL is configured. Clicking immediately fires a request — no intermediate dialog. A loading indicator replaces the player while synthesis runs.
+      </div>
+    </div>
+
+    <!-- ──────────────────────────────────── ERROR ── -->
+    <div id="screen-error" class="screen-section">
+      <div class="screen-header">
+        <div>
+          <div class="screen-title">Error States <span class="state-tag error-state">Error</span></div>
+          <div class="screen-desc">All error conditions and their UI treatments</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <!-- Config: no URL set -->
+        <div>
+          <div style="font-size:12px;color:#64748b;margin-bottom:10px">Configuration — no API URL set</div>
+          <div class="ext-popup">
+            <div class="popup-header">
+              <div class="popup-header-icon">🔊</div>
+              <div class="popup-header-text">
+                <div class="popup-header-title">Kokoro TTS</div>
+                <div class="popup-header-sub">Text-to-Speech</div>
+              </div>
+              <span class="status-pill disconnected"><span class="status-dot"></span> Not set up</span>
+            </div>
+            <div class="popup-body">
+              <div class="error-banner">
+                <span class="error-icon">⚠️</span>
+                <div class="error-text">Enter your Kokoro TTS API URL to get started.</div>
+              </div>
+              <div class="section-heading">API Configuration</div>
+              <div class="field">
+                <label class="field-label">API Endpoint URL</label>
+                <input class="input error" type="text" placeholder="http://192.168.1.x:8000" readonly>
+                <div style="font-size:11px;color:#ef4444;margin-top:4px">Please enter a valid URL</div>
+              </div>
+              <button class="btn btn-outline btn-full btn-sm" style="opacity:0.5;cursor:not-allowed">
+                🔌 Test Connection
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Player: API error -->
+        <div>
+          <div style="font-size:12px;color:#64748b;margin-bottom:10px">Player — synthesis failed</div>
+          <div class="player-popup" style="width:320px;">
+            <div class="player-close">✕</div>
+            <div class="player-status" style="color:#f87171">✕ Error</div>
+            <div class="player-title" style="color:#f1f5f9">Synthesis Failed</div>
+            <div class="player-voice" style="color:#f87171;margin-bottom:12px">API returned 503 · Service unavailable</div>
+
+            <div class="error-banner" style="background:#2d1515;border-color:#7f1d1d">
+              <span class="error-icon">⚠️</span>
+              <div class="error-text" style="color:#fca5a5">Could not reach the Kokoro TTS API. Check that the service is running and try again.</div>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <button class="btn btn-outline btn-full" style="border-color:#3f3f5a;color:#94a3b8;flex:1">Dismiss</button>
+              <button class="btn btn-primary btn-full" style="flex:1">Retry</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Config: connection failed -->
+        <div>
+          <div style="font-size:12px;color:#64748b;margin-bottom:10px">Configuration — test connection failed</div>
+          <div class="ext-popup">
+            <div class="popup-header">
+              <div class="popup-header-icon">🔊</div>
+              <div class="popup-header-text">
+                <div class="popup-header-title">Kokoro TTS</div>
+                <div class="popup-header-sub">Text-to-Speech</div>
+              </div>
+              <span class="status-pill disconnected"><span class="status-dot"></span> Offline</span>
+            </div>
+            <div class="popup-body">
+              <div class="error-banner">
+                <span class="error-icon">⚠️</span>
+                <div class="error-text">Cannot reach API at <strong>192.168.1.100:8000</strong>. Check the URL and ensure the service is running.</div>
+              </div>
+              <div class="section-heading">API Configuration</div>
+              <div class="field">
+                <label class="field-label">API Endpoint URL</label>
+                <div class="field-row">
+                  <input class="input error" type="text" value="http://192.168.1.100:8000" readonly>
+                  <button class="btn btn-outline btn-icon btn-sm">↺</button>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-full btn-sm">
+                🔌 Test Connection
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────────────────────────── LOADING ── -->
+    <div id="screen-loading" class="screen-section">
+      <div class="screen-header">
+        <div>
+          <div class="screen-title">Loading States <span class="state-tag default">In Progress</span></div>
+          <div class="screen-desc">UI feedback while awaiting API responses</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <!-- Testing connection -->
+        <div>
+          <div style="font-size:12px;color:#64748b;margin-bottom:10px">Testing connection</div>
+          <div class="ext-popup">
+            <div class="popup-header">
+              <div class="popup-header-icon">🔊</div>
+              <div class="popup-header-text">
+                <div class="popup-header-title">Kokoro TTS</div>
+                <div class="popup-header-sub">Text-to-Speech</div>
+              </div>
+              <span class="status-pill testing"><span class="status-dot"></span> Testing…</span>
+            </div>
+            <div class="popup-body">
+              <div class="section-heading">API Configuration</div>
+              <div class="field">
+                <label class="field-label">API Endpoint URL</label>
+                <div class="field-row">
+                  <input class="input" type="text" value="http://192.168.1.100:8000" readonly style="border-color:#fbbf24">
+                  <button class="btn btn-outline btn-icon btn-sm" style="opacity:0.4">↺</button>
+                </div>
+              </div>
+              <button class="btn btn-outline btn-full btn-sm" style="opacity:0.6">
+                <span class="loading-dot">●</span><span class="loading-dot">●</span><span class="loading-dot">●</span>
+                &nbsp;Connecting…
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Synthesizing audio -->
+        <div>
+          <div style="font-size:12px;color:#64748b;margin-bottom:10px">Synthesizing audio</div>
+          <div class="player-popup" style="width:320px;">
+            <div class="player-close" style="opacity:0.4">✕</div>
+            <div class="player-status" style="color:#fbbf24">
+              <span class="loading-dot">●</span><span class="loading-dot">●</span><span class="loading-dot">●</span>
+              &nbsp;Synthesizing
+            </div>
+            <div class="player-title">af_heart — Afrikaans Female</div>
+            <div class="player-voice" style="margin-bottom:18px">Processing 342 characters…</div>
+
+            <div class="player-controls">
+              <button class="ctrl-btn" style="opacity:0.3">■</button>
+              <button class="ctrl-btn play" style="opacity:0.5;cursor:not-allowed">⏸</button>
+              <button class="ctrl-btn" style="opacity:0.3">↺</button>
+            </div>
+
+            <div class="progress-bar" style="overflow:hidden">
+              <div style="height:100%;background:linear-gradient(90deg,#4f46e5,#818cf8,#4f46e5);background-size:200%;animation:shimmer 1.5s infinite linear;border-radius:2px"></div>
+            </div>
+            <div class="progress-times">
+              <span>--:--</span>
+              <span>--:--</span>
+            </div>
+
+            <div class="volume-row">
+              <span class="volume-icon">🔊</span>
+              <input type="range" class="dark" min="0" max="100" value="80" style="accent-color:#818cf8">
+            </div>
+          </div>
+        </div>
+      </div>
+      <style>
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+      </style>
+    </div>
+
+    <!-- ──────────────────────────────────── SETUP FLOW ── -->
+    <div id="screen-setup" class="screen-section">
+      <div class="screen-header">
+        <div>
+          <div class="screen-title">Initial Setup Flow</div>
+          <div class="screen-desc">First-run experience — step by step</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+
+        <!-- Step 1 -->
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <div style="width:22px;height:22px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">1</div>
+            <div style="font-size:12px;color:#94a3b8">Enter API URL</div>
+          </div>
+          <div class="ext-popup">
+            <div class="popup-header">
+              <div class="popup-header-icon">🔊</div>
+              <div class="popup-header-text">
+                <div class="popup-header-title">Welcome to Kokoro TTS</div>
+                <div class="popup-header-sub">Let's get you set up</div>
+              </div>
+            </div>
+            <div class="popup-body">
+              <div style="text-align:center;padding:8px 0 14px">
+                <div style="font-size:32px;margin-bottom:8px">🔊</div>
+                <div style="font-size:13px;font-weight:600;color:#1e293b;margin-bottom:4px">Connect your Kokoro TTS API</div>
+                <div style="font-size:12px;color:#64748b">Enter the URL of your local Kokoro TTS instance</div>
+              </div>
+              <div class="field">
+                <label class="field-label">API Endpoint URL</label>
+                <input class="input" type="text" placeholder="http://192.168.1.x:8000" readonly>
+              </div>
+              <button class="btn btn-primary btn-full" style="margin-top:4px">Test & Connect →</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:24px;color:#2d2d3f;align-self:center;margin-top:40px">→</div>
+
+        <!-- Step 2 -->
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <div style="width:22px;height:22px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">2</div>
+            <div style="font-size:12px;color:#94a3b8">Pick a voice</div>
+          </div>
+          <div class="ext-popup">
+            <div class="popup-header" style="background:linear-gradient(135deg,#059669,#0d9488)">
+              <div class="popup-header-icon">✓</div>
+              <div class="popup-header-text">
+                <div class="popup-header-title">Connected!</div>
+                <div class="popup-header-sub">5 voices available</div>
+              </div>
+            </div>
+            <div class="popup-body">
+              <div style="font-size:13px;font-weight:600;color:#1e293b;margin-bottom:10px">Choose your default voice</div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
+                <div style="border:2px solid #818cf8;border-radius:8px;padding:9px 12px;background:#eff6ff;cursor:pointer;display:flex;justify-content:space-between;align-items:center">
+                  <div>
+                    <div style="font-size:12px;font-weight:600;color:#1e293b">af_heart</div>
+                    <div style="font-size:11px;color:#64748b">Afrikaans · Female</div>
+                  </div>
+                  <span style="font-size:18px">✓</span>
+                </div>
+                <div style="border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center">
+                  <div>
+                    <div style="font-size:12px;font-weight:600;color:#1e293b">am_adam</div>
+                    <div style="font-size:11px;color:#64748b">American · Male</div>
+                  </div>
+                  <span style="font-size:11px;color:#94a3b8">▶ Preview</span>
+                </div>
+                <div style="border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center">
+                  <div>
+                    <div style="font-size:12px;font-weight:600;color:#1e293b">bf_emma</div>
+                    <div style="font-size:11px;color:#64748b">British · Female</div>
+                  </div>
+                  <span style="font-size:11px;color:#94a3b8">▶ Preview</span>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-full">Done — Start using TTS →</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:24px;color:#2d2d3f;align-self:center;margin-top:40px">→</div>
+
+        <!-- Step 3 -->
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <div style="width:22px;height:22px;border-radius:50%;background:#059669;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">✓</div>
+            <div style="font-size:12px;color:#94a3b8">Ready to use</div>
+          </div>
+          <div class="ext-popup">
+            <div class="popup-header" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">
+              <div class="popup-header-icon">🔊</div>
+              <div class="popup-header-text">
+                <div class="popup-header-title">Kokoro TTS</div>
+                <div class="popup-header-sub">Ready · af_heart</div>
+              </div>
+              <span class="status-pill connected"><span class="status-dot"></span> Connected</span>
+            </div>
+            <div class="popup-body" style="text-align:center;padding:20px">
+              <div style="font-size:36px;margin-bottom:10px">🎉</div>
+              <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:6px">You're all set!</div>
+              <div style="font-size:12px;color:#64748b;line-height:1.6">
+                Highlight any text on a webpage, right-click, and choose <strong>"Read with Kokoro TTS"</strong>
+              </div>
+              <div style="margin-top:16px;background:#f8fafc;border-radius:8px;padding:12px;font-size:11px;color:#64748b">
+                Tip: Use <kbd style="background:#e2e8f0;border-radius:3px;padding:1px 5px;font-size:10px">Ctrl+Shift+R</kbd> for quick synthesis
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function show(name) {
+    document.querySelectorAll('.screen-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  function toggleAdvanced() {
+    const content = document.getElementById('adv-content');
+    const chevron = document.getElementById('adv-chevron');
+    if (content.style.display === 'none') {
+      content.style.display = '';
+      chevron.textContent = '▾';
+    } else {
+      content.style.display = 'none';
+      chevron.textContent = '▸';
+    }
+  }
+</script>
+</body>
+</html>
