@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Kokoro TTS",
   "short_name": "Kokoro TTS",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Highlight text on any webpage and hear it read aloud using your local Kokoro TTS API.",
 
   "permissions": ["contextMenus", "storage", "tabs", "notifications"],
