@@ -195,7 +195,7 @@ async function openOrFocusPlayer() {
     url:     chrome.runtime.getURL('player.html'),
     type:    'popup',
     width:   380,
-    height:  280,
+    height:  310,
     focused: true,
   });
 
