@@ -75,6 +75,19 @@ async function getSettings() {
   });
 }
 
+// ── SW Keepalive ───────────────────────────────────────────────────────
+// MV3 service workers are suspended after ~30 s with no Chrome API activity.
+// A plain fetch() doesn't reset that timer, so long synthesis requests get
+// terminated mid-flight, producing "user aborted the request" AbortErrors.
+// We prevent suspension by pinging chrome.storage every 20 s while busy.
+
+function startKeepalive() {
+  return setInterval(() => chrome.storage.local.get('_ka'), 20_000);
+}
+function stopKeepalive(timer) {
+  clearInterval(timer);
+}
+
 // ── Core synthesis flow ────────────────────────────────────────────────
 // All network calls happen here in the service worker — no CORS issues.
 
@@ -108,6 +121,9 @@ async function triggerSynthesis(text) {
   await openOrFocusPlayer();
 
   // Fetch audio in the service worker (CORS-free).
+  // Keep the SW alive with a heartbeat — fetch() doesn't reset Chrome's
+  // 30-second idle timer, so without this the SW is suspended mid-request.
+  const keepalive = startKeepalive();
   try {
     const base = settings.apiUrl.replace(/\/+$/, '');
     const res  = await fetch(`${base}/audio/speech`, {
@@ -120,7 +136,7 @@ async function triggerSynthesis(text) {
         response_format: 'mp3',
         speed:           settings.speed ?? 1.0,
       }),
-      signal:  AbortSignal.timeout(30_000),
+      signal:  AbortSignal.timeout(300_000), // 5 min — large texts take time
     });
 
     if (!res.ok) {
@@ -143,13 +159,16 @@ async function triggerSynthesis(text) {
       },
     });
   } catch (err) {
-    const msg = err.name === 'TimeoutError'
-      ? 'Request timed out after 30 s. Is the API running?'
-      : err.message.length > 120 ? err.message.slice(0, 120) + '…' : err.message;
+    const msg =
+      err.name === 'TimeoutError' || err.name === 'AbortError'
+        ? 'Synthesis timed out — the server took too long. Try shorter text or check that the API is responsive.'
+        : err.message.length > 120 ? err.message.slice(0, 120) + '…' : err.message;
 
     await chrome.storage.local.set({
       pendingSynthesis: { id, state: 'error', error: msg },
     });
+  } finally {
+    stopKeepalive(keepalive);
   }
 }
 
