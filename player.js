@@ -15,11 +15,15 @@ const timeElapsed   = document.getElementById('time-elapsed');
 const timeDuration  = document.getElementById('time-duration');
 const volumeSlider  = document.getElementById('volume-slider');
 const volumeIcon    = document.getElementById('volume-icon');
+const downloadBtn   = document.getElementById('download-btn');
 const closeBtn      = document.getElementById('close-btn');
 
 // ── Audio ──────────────────────────────────────────────────────────────
 const audio = new Audio();
-let isDragging = false;
+let isDragging   = false;
+let currentDataUrl  = null;
+let currentVoice    = null;
+let currentMimeType = 'audio/mpeg';
 
 // ── Storage watcher ────────────────────────────────────────────────────
 // The background service worker writes synthesis state here; we react to it.
@@ -52,9 +56,11 @@ function showLoading(voice) {
   hideError();
   setStatus('loading', '⏳ Synthesizing…');
   playerTitle.textContent = voice || 'Kokoro TTS';
-  playBtn.disabled  = true;
-  stopBtn.disabled  = true;
-  replayBtn.disabled = true;
+  playBtn.disabled     = true;
+  stopBtn.disabled     = true;
+  replayBtn.disabled   = true;
+  downloadBtn.disabled = true;
+  downloadBtn.style.opacity = '0.35';
   audio.pause();
   resetProgress();
 }
@@ -73,6 +79,12 @@ function applyAudio({ dataUrl, voice, autoPlay, volume, speed }) {
   updateVolumeIcon(audio.volume);
 
   audio.src = dataUrl;
+
+  currentDataUrl  = dataUrl;
+  currentVoice    = voice;
+  currentMimeType = dataUrl.match(/^data:([^;]+)/)?.[1] || 'audio/mpeg';
+  downloadBtn.disabled = false;
+  downloadBtn.style.opacity = '1';
 
   if (autoPlay !== false) {
     audio.play().catch(() => {
@@ -141,6 +153,20 @@ replayBtn.addEventListener('click', () => {
 });
 
 closeBtn.addEventListener('click', () => window.close());
+
+// ── Download ───────────────────────────────────────────────────────────
+
+downloadBtn.addEventListener('click', () => {
+  if (!currentDataUrl) return;
+  const ext      = currentMimeType === 'audio/mpeg' ? 'mp3' : currentMimeType.split('/')[1] || 'mp3';
+  const ts       = new Date().toISOString().slice(0, 19).replace(/[:.]/g, '-');
+  const safeName = (currentVoice || 'tts').replace(/[^a-z0-9_-]/gi, '_');
+  const filename = `kokoro-${safeName}-${ts}.${ext}`;
+  const a        = document.createElement('a');
+  a.href         = currentDataUrl;
+  a.download     = filename;
+  a.click();
+});
 
 // ── Volume ─────────────────────────────────────────────────────────────
 
