@@ -16,7 +16,6 @@ const timeDuration  = document.getElementById('time-duration');
 const volumeSlider  = document.getElementById('volume-slider');
 const volumeIcon    = document.getElementById('volume-icon');
 const downloadBtn   = document.getElementById('download-btn');
-const closeBtn      = document.getElementById('close-btn');
 
 // ── Audio ──────────────────────────────────────────────────────────────
 const audio = new Audio();
@@ -151,8 +150,6 @@ replayBtn.addEventListener('click', () => {
   audio.currentTime = 0;
   audio.play();
 });
-
-closeBtn.addEventListener('click', () => window.close());
 
 // ── Download ───────────────────────────────────────────────────────────
 
