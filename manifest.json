@@ -5,7 +5,7 @@
   "version": "1.1.0",
   "description": "Highlight text on any webpage and hear it read aloud using your local Kokoro TTS API.",
 
-  "permissions": ["contextMenus", "storage", "tabs", "notifications"],
+  "permissions": ["contextMenus", "storage", "tabs", "notifications", "unlimitedStorage"],
   "host_permissions": ["<all_urls>"],
 
   "background": {
